@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:17
+    container_name: sports_events_db
+    environment:
+      POSTGRES_DB: sports_events
+      POSTGRES_USER: lab
+      POSTGRES_PASSWORD: lab
+    ports:
+      - "55432:5432"
+    volumes:
+      - ./sql:/docker-entrypoint-initdb.d:ro
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
