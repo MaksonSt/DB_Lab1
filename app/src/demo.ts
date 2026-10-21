@@ -46,6 +46,15 @@ async function main() {
     const team = await uow.teams.getById(result.teamId);
     console.log(`Тренер: ${team?.coach_name}; змінив: ${team?.updated_by_name}; коли: ${team?.updated_at.toISOString()}`);
   });
+
+  console.log('\n=== 4. Soft delete спортсмена ===');
+  await UnitOfWork.run(pool, MANAGER, (uow) => uow.athletes.delete(result.athlete2));
+  await UnitOfWork.run(pool, ADMIN, async (uow) => {
+    console.log('Спортсмен у v_athletes:', (await uow.athletes.getById(result.athlete2)) ?? 'немає (видалений)');
+    console.log('Склад команди тепер:', (await uow.teamMembers.getRoster(result.teamId)).map((r) => r.athlete_name));
+  });
+  console.log('Рядок у таблиці athletes залишився з is_deleted = true (перевірити в SQL):');
+  console.log(`  SELECT id, is_deleted, deleted_at, deleted_by FROM athletes WHERE id = ${result.athlete2};`);
 }
 
 main()
